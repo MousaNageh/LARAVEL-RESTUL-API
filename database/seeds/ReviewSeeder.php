@@ -1,5 +1,6 @@
 <?php
 
+use App\Review;
 use Illuminate\Database\Seeder;
 
 class ReviewSeeder extends Seeder
@@ -11,6 +12,6 @@ class ReviewSeeder extends Seeder
      */
     public function run()
     {
-        //
+        Factory(Review::class , 300)->create() ; 
     }
 }
