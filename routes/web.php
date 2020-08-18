@@ -15,6 +15,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    dd(Product::find(2)->reviews) ; 
-    //return view('welcome');
+    
+    return view('welcome');
+}); 
+Route::get('/products', function () {
+    echo "hello" ;  
 });
