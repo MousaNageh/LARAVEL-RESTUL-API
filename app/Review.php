@@ -7,6 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class Review extends Model
 {
     public function product(){
-        $this->belongsTo(Product::class ,"product_id") ; 
+        return $this->belongsTo(Product::class , "product_id") ; 
     }
 }
