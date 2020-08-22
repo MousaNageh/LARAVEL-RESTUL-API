@@ -13,7 +13,7 @@ class ProductController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(["auth:api"])->only(["store","update","delete"]) ; 
+        $this->middleware(["auth:api"])->only(["store","update","delete"]) ;
     }
     /**
      * Display a listing of the resource.
@@ -21,9 +21,9 @@ class ProductController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {  
+    {
         return ProductCollection::collection(Product::paginate(20)) ;
-        //return  new ProductCollection(Product::all()) ; if we use the default collection class   
+        //return  new ProductCollection(Product::all()) ; if we use the default collection class
 
     }
     /**
@@ -45,22 +45,23 @@ class ProductController extends Controller
     public function store(CreateProductRequest $request)
     {
         $product=Product::create([
-            "name"=>$request->name , 
+            "name"=>$request->name ,
             "details"=>$request->description,
-            "price"=>$request->price , 
-            "stock"=>$request->stock , 
-            "discount"=>$request->discount
-        ]) ; 
+            "price"=>$request->price ,
+            "stock"=>$request->stock ,
+            "discount"=>$request->discount , 
+            "user_id"=>auth()->user()->id
+        ]) ;
         if($product){
             return response([
                 "data"=>new ProductResource($product)
-            ],Response::HTTP_CREATED) ;  
+            ],Response::HTTP_CREATED) ;
         }
-        else 
+        else
         {
-            return "product failed to create" ; 
+            return "product failed to create" ;
         }
-        
+
     }
 
     /**
@@ -71,8 +72,8 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        
-        return new ProductResource($product) ; 
+
+        return new ProductResource($product) ;
     }
 
     /**
@@ -83,7 +84,7 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        //
+
     }
 
     /**
@@ -95,7 +96,28 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        //
+        if($product->user_id ==auth()->user()->id) {
+            $request->validate([
+                "name"=>"required|unique:products,name,$product->id" ,
+                "description"=>"required",
+                "price"=>"required" ,
+                "stock"=>"required|max:6" ,
+                "discount"=>"required|max:2"
+            ]);
+            $request["details"]=$request->description ;
+            unset($request["description"]) ;
+            $product->update($request->all()) ; 
+            return response([
+                    "data"=>new ProductResource($product)
+                ]) ;
+        }
+        else
+        {
+            return response([
+                "auth error"=>"you can not access this data"
+            ],Response::HTTP_NON_AUTHORITATIVE_INFORMATION) ;
+        }
+
     }
 
     /**
@@ -106,6 +128,15 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        //
+        if($product->user_id == auth()->user()->id){
+            $product->delete() ;
+            return response(null,Response::HTTP_NO_CONTENT) ;  
+        }  
+        else
+        {
+            return response([
+                "auth error"=>"you can not access this data"
+            ],Response::HTTP_NON_AUTHORITATIVE_INFORMATION) ;
+        }
     }
 }
