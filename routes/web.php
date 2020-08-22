@@ -21,3 +21,11 @@ Route::get('/', function () {
 Route::get('/products', function () {
     echo "hello" ;  
 });
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
