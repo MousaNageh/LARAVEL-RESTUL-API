@@ -51,21 +51,47 @@ class Handler extends ExceptionHandler
      *
      * @throws \Throwable
      */
+
+
+    /*
+    -this method checks if the model is exist or not 
+    -if exist return true 
+    -if not return false 
+    -takes one parameter is the Exception 
+     */
+    public function isModel(Throwable $exception){
+        return $exception instanceof ModelNotFoundException ; 
+    }
+    /*
+    -this method checks if the route is exist or not 
+    -if exist return true 
+    -if not return false 
+    -takes one parameter is the Exception 
+     */
+    public function isHTTP(Throwable $exception){
+        return $exception instanceof NotFoundHttpException ; 
+    } 
+
+
     public function render($request, Throwable $exception)
     {
-        //if the product is not exists
+        
         if($request->expectsJson()){
-            if($exception instanceof ModelNotFoundException){
+
+            //if the product is not exists
+            if($this->isModel($exception)){
                 return response()->json([
-                    "errors"=>"product mot found"
+                    "errors"=>"product not found"
                 ],Response::HTTP_NOT_FOUND) ; 
             }
-        }
-        //if the route is not exists 
-        if($exception instanceof NotFoundHttpException){
-            return response()->json([
-                "errors"=>"incorect route"
-            ],Response::HTTP_NOT_FOUND) ;
+
+            //if the route is not exists 
+            if($this->isHTTP($exception)){
+                return response()->json([
+                    "errors"=>"incorect route"
+                ],Response::HTTP_NOT_FOUND) ;
+            }
+        
         }
         
         
