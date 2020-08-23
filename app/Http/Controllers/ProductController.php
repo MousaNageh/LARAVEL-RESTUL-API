@@ -133,7 +133,7 @@ class ProductController extends Controller
             return response(null,Response::HTTP_NO_CONTENT) ;  
         }  
         else
-        {
+            {
             return response([
                 "auth error"=>"you can not access this data"
             ],Response::HTTP_NON_AUTHORITATIVE_INFORMATION) ;
