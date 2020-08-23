@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\ProductNotBelongToUser;
 use App\Http\Requests\CreateProductRequest;
 use App\Http\Resources\product\ProductCollection;
 use App\Http\Resources\product\ProductResource;
 use App\Product;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Auth ; 
 
 class ProductController extends Controller
 {
@@ -113,9 +115,7 @@ class ProductController extends Controller
         }
         else
         {
-            return response([
-                "auth error"=>"you can not access this data"
-            ],Response::HTTP_NON_AUTHORITATIVE_INFORMATION) ;
+            throw new ProductNotBelongToUser ;
         }
 
     }
@@ -128,15 +128,12 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
+        dd(Auth::user()->id) ; 
         if($product->user_id == auth()->user()->id){
             $product->delete() ;
             return response(null,Response::HTTP_NO_CONTENT) ;  
         }  
         else
-            {
-            return response([
-                "auth error"=>"you can not access this data"
-            ],Response::HTTP_NON_AUTHORITATIVE_INFORMATION) ;
-        }
+            throw new ProductNotBelongToUser ; 
     }
 }
